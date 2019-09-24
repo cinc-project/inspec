@@ -34,6 +34,6 @@ Source code obtained from the Chef GitHub repository is made available under Apa
     Dir.glob("{lib,bin}/**/*", File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
 
   spec.bindir = "bin"
-  spec.executables = %w{inspec}
+  spec.executables = %w{cinc-auditor}
 
 end

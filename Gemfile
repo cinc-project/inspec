@@ -18,7 +18,7 @@ gem "inspec", path: "."
 #
 # However, AppBundler requires a top-level Gemfile.lock with inspec-bin
 # in it in order to package the executable. Hence the odd backwards dependency.
-gem "inspec-bin", path: "./inspec-bin"
+gem "cinc-auditor-bin", path: "./inspec-bin"
 
 # ffi version v1.17.0 is breaking verify pipeline as it requires
 # rubygems version to be upgraded to >= 3.3.22 Ref:https://buildkite.com/chef/inspec-inspec-main-verify-private/builds/812#018fe177-2ccb-45ed-a25e-213c8a6453df/698-707

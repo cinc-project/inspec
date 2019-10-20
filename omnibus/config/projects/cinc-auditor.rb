@@ -42,7 +42,7 @@ overrides_path = File.expand_path("../../../omnibus_overrides.rb", __dir__)
 instance_eval(File.read(overrides_path), overrides_path)
 
 dependency "preparation"
-dependency "inspec"
+dependency "cinc-auditor"
 
 # Remove all .dll.a and .a files needed for static linkage.
 dependency "ruby-cleanup"

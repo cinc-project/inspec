@@ -17,6 +17,7 @@ module Inspec::Resources
     name "ibmdb2_session"
 
     supports platform: "unix"
+    supports platform: "windows"
 
     desc "Use the ibmdb2_session InSpec audit resource to test SQL commands run against a IBM Db2 database."
     example <<~EXAMPLE
@@ -26,22 +27,32 @@ module Inspec::Resources
     EXAMPLE
 
     def initialize(opts = {})
-      @db2_executable_file_path = opts[:db2_executable_file_path]
-      @db_instance = opts[:db_instance]
       @db_name = opts[:db_name]
-      raise Inspec::Exceptions::ResourceFailed, "Can't run IBM DB2 queries without db2_executable_file_path, db_instance, db_name options provided." if @db2_executable_file_path.nil? || @db_instance.nil? || @db_name.nil?
+      if inspec.os.platform?("unix")
+        @db2_executable_file_path = opts[:db2_executable_file_path]
+        @db_instance = opts[:db_instance]
+        raise Inspec::Exceptions::ResourceFailed, "Can't run IBM DB2 queries without db2_executable_file_path, db_instance, db_name options provided." if @db2_executable_file_path.nil? || @db_instance.nil? || @db_name.nil?
+      elsif inspec.os.platform?("windows")
+        raise Inspec::Exceptions::ResourceFailed, "Can't run IBM DB2 queries without db_name option provided." if @db_name.nil?
+      end
     end
 
     def query(q)
       raise Inspec::Exceptions::ResourceFailed, "#{resource_exception_message}" if resource_failed?
 
-      # connect to the db and query on the database
-      cmd = inspec.command("#{@db2_executable_file_path} attach to #{@db_instance}\; #{@db2_executable_file_path} connect to #{@db_name}\; #{@db2_executable_file_path} #{q}\;")
-      out = cmd.stdout + "\n" + cmd.stderr
+      if inspec.os.platform?("unix")
+        # connect to the db and query on the database
+        cmd = inspec.command("#{@db2_executable_file_path} attach to #{@db_instance}\; #{@db2_executable_file_path} connect to #{@db_name}\; #{@db2_executable_file_path} #{q}\;")
+        out = cmd.stdout + "\n" + cmd.stderr
 
-      # check if following specific error is there. Sourcing the db2profile to resolve the error.
-      if cmd.exit_status != 0 && out =~ /SQL10007N Message "-1390" could not be retrieved.  Reason code: "3"/
-        cmd = inspec.command(". ~/sqllib/db2profile\; #{@db2_executable_file_path} attach to #{@db_instance}\; #{@db2_executable_file_path} connect to #{@db_name}\; #{@db2_executable_file_path} #{q}\;")
+        # check if following specific error is there. Sourcing the db2profile to resolve the error.
+        if cmd.exit_status != 0 && out =~ /SQL10007N Message "-1390" could not be retrieved.  Reason code: "3"/
+          cmd = inspec.command(". ~/sqllib/db2profile\; #{@db2_executable_file_path} attach to #{@db_instance}\; #{@db2_executable_file_path} connect to #{@db_name}\; #{@db2_executable_file_path} #{q}\;")
+          out = cmd.stdout + "\n" + cmd.stderr
+        end
+      elsif inspec.os.platform?("windows")
+        # set-item command set the powershell to run the db2 commands.
+        cmd = inspec.command("set-item -path env:DB2CLP -value \"**$$**\"\; db2 connect to #{@db_name}\; db2 #{q}\;")
         out = cmd.stdout + "\n" + cmd.stderr
       end
 

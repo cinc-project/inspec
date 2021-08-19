@@ -193,7 +193,7 @@ class Inspec::InspecCLI < Inspec::BaseCLI
     profile = Inspec::Profile.for_target(path, o)
     result = profile.check
 
-    if result && !o[:ignore_errors] == false
+    if result && !o[:ignore_errors]
       o[:logger].info "Profile check failed. Please fix the profile before generating an archive."
       return ui.exit Inspec::UI::EXIT_USAGE_ERROR
     end

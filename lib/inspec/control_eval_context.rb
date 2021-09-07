@@ -201,6 +201,11 @@ module Inspec
       id_exist_in_list
     end
 
+    # Returns true if configuration hash is empty or configuration hash does not have the list of controls that needs to be included
+    def controls_list_empty?
+      !@conf.empty? && @conf.key?("profile") && @conf["profile"].include_controls_list.empty? || @conf.empty?
+    end
+
     private
 
     def block_location(block, alternate_caller)
@@ -219,11 +224,6 @@ module Inspec
 
     def profile_tag_config_exist?
       !@conf.empty? && @conf.key?("profile") && !@conf["profile"].include_tags_list.empty?
-    end
-
-    # Returns true if configuration hash is empty or configuration hash does not have the list of controls that needs to be included
-    def controls_list_empty?
-      !@conf.empty? && @conf.key?("profile") && @conf["profile"].include_controls_list.empty? || @conf.empty?
     end
 
     def tags_list_empty?

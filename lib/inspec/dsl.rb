@@ -112,8 +112,8 @@ module Inspec::DSL
       fid = Inspec::Rule.profile_id(r) + "/" + id
       if !opts[:include_all] && !(include_ctx.rules[id] || include_ctx.rules[fid])
         context.remove_rule(fid)
-      elsif !control_eval_ctx.control_exist_in_controls_list?(id)
-      # filter the dependent profile controls which are not in the --controls options list
+      elsif !control_eval_ctx.controls_list_empty? && !control_eval_ctx.control_exist_in_controls_list?(id)
+        #filter the dependent profile controls which are not in the --controls options list
         context.remove_rule(fid)
       end
     end

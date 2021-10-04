@@ -12,6 +12,7 @@ pkg_deps=(
   core/git
   core/ruby26
   core/bash
+  core/cacerts/2020.01.01/20200306005234
 )
 pkg_build_deps=(
   core/gcc

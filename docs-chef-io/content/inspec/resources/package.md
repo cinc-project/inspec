@@ -63,7 +63,7 @@ The following examples show how to use this Chef InSpec audit resource.
       its('telnet') { should eq nil }
     end
 
-### Test if ClamAV (an antivirus engine) is installed and running
+### Test if ClamAV (an antivirus engine) is installed, latest and running
 
     describe package('clamav') do
       it { should be_installed }
@@ -73,6 +73,7 @@ The following examples show how to use this Chef InSpec audit resource.
     describe service('clamd') do
       it { should be_enabled }
       it { should be_installed }
+      it { should be_latest }
       it { should be_running }
     end
 
@@ -82,7 +83,7 @@ The following examples show how to use this Chef InSpec audit resource.
       it { should be_installed }
     end
 
-### Verify if Memcached is installed, enabled, and running
+### Verify if Memcached is installed, latest, enabled, and running
 
 Memcached is an in-memory key-value store that helps improve the performance of database-driven websites and can be installed, maintained, and tested using the `memcached` cookbook (maintained by Chef). The following example is from the `memcached` cookbook and shows how to use a combination of the `package`, `service`, and `port` Chef InSpec audit resources to test if Memcached is installed, enabled, and running:
 
@@ -92,6 +93,7 @@ Memcached is an in-memory key-value store that helps improve the performance of 
 
     describe service('memcached') do
       it { should be_installed }
+      it { should be_latest }
       it { should be_enabled }
       it { should be_running }
     end
@@ -128,3 +130,9 @@ You can also use the `cmp OPERATOR` matcher to perform comparisons using the ver
     its('version') { should cmp >= '7.35.0-1ubuntu3.10' }
 
 `cmp` understands version numbers using Gem::Version, and can use the operators `==, <, <=, >=, and >`. It will compare versions by each segment, not as a string - so '7.4' is smaller than '7.30', for example.
+
+### be_latest
+
+The `be_latest` matcher tests if the named installed package is latest on the system. It is not supported in Oracle Solaris, IBM AIX and HP UX operating systems.
+
+    it { should be_latest }

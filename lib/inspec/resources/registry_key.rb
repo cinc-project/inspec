@@ -105,6 +105,12 @@ module Inspec::Resources
       children_keys(@options[:path], filter)
     end
 
+    # returns hash containing users / groups and their permission
+    def user_permissions
+      return {} unless exists?
+      get_permissions(@options[:path])
+    end
+
     # returns nil, if not existent or value
     def method_missing(*keys)
       # allow the use of array syntax in an `its` block so that users
@@ -119,6 +125,12 @@ module Inspec::Resources
       # get data
       val = registry_key(@options[:path])
       registry_property_value(val, key)
+    end
+
+    def inherit?
+      return false unless exists?
+      cmd = inspec.command("(Get-Acl -Path 'Registry::#{@options[:path]}').access| Where-Object {$_.IsInherited -eq $true} | measure | % { $_.Count }")
+      cmd.stdout.chomp == "0" ? false : true
     end
 
     def to_s
@@ -282,6 +294,21 @@ module Inspec::Resources
       return "" unless key
 
       key.start_with?("\\") ? key : "\\#{key}"
+    end
+
+    def get_permissions(path)
+      script = <<~EOH
+      $path = '#{path}'
+      $Acl = Get-Acl -Path ('Registry::' + $path)
+      $Result = foreach ($Access in $acl.Access) {
+        [PSCustomObject]@{
+          $Access.IdentityReference = $Access.RegistryRights.ToString()
+        }
+      }
+      $Result | ConvertTo-Json
+      EOH
+      result = inspec.powershell(script)
+      JSON.load(result.stdout).inject(&:merge) unless result.stdout.empty?
     end
   end
 

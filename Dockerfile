@@ -22,7 +22,7 @@ RUN mkdir -p /share
 
 RUN apt-get update && \
     apt-get install -y wget rpm2cpio cpio && \
-    wget "http://ftp-osl.osuosl.org/pub/cinc/files/${CHANNEL}/cinc-auditor/${VERSION}/el/7/cinc-auditor-${VERSION}-1.el7.x86_64.rpm" -O /tmp/cinc-auditor.rpm && \
+    wget "http://ftp-osl.osuosl.org/pub/cinc/files/${CHANNEL}/cinc-auditor/${VERSION}/el/8/cinc-auditor-${VERSION}-1.el8.x86_64.rpm" -O /tmp/cinc-auditor.rpm && \
     rpm2cpio /tmp/cinc-auditor.rpm | cpio -idmv && \
     rm -rf /tmp/cinc-auditor.rpm
 

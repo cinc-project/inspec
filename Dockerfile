@@ -1,7 +1,7 @@
 FROM --platform=linux/amd64 ubuntu:22.04
 LABEL maintainer="Cinc Project <docker@cinc.sh>"
 
-ARG VERSION=5.22.3
+ARG VERSION=6.8.11
 ARG CHANNEL=stable
 
 ENV PATH=/opt/cinc-auditor/bin:/opt/cinc-auditor/embedded/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin

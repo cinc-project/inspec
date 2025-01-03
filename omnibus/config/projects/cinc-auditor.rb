@@ -77,6 +77,7 @@ package :msi do
   upgrade_code "DFCD452F-31E5-4236-ACD1-253F4720250B"
   wix_light_extension "WixUtilExtension"
   # signing_identity "7D16AE73AB249D473362E9332D029089DBBB89B2", machine_store: false, keypair_alias: "key_875762014"
+  wix_light_delay_validation true
 end
 
 exclude "**/.git"

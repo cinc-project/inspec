@@ -3,6 +3,7 @@ LABEL maintainer="Cinc Project <docker@cinc.sh>"
 
 ARG VERSION=5.22.72
 ARG CHANNEL=stable
+ARG TARGETARCH
 ARG ARCH=x86_64
 
 ENV PATH=/opt/cinc-auditor/bin:/opt/cinc-auditor/embedded/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
@@ -23,6 +24,10 @@ RUN mkdir -p /share
 
 RUN apt-get update && \
     apt-get install -y wget rpm2cpio cpio && \
+    case "$TARGETARCH" in \
+        amd64)  ARCH=x86_64 ;; \
+        arm64)  ARCH=aarch64 ;; \
+    esac && \
     wget "http://ftp-osl.osuosl.org/pub/cinc/files/${CHANNEL}/cinc-auditor/${VERSION}/el/8/cinc-auditor-${VERSION}-1.el8.${ARCH}.rpm" -O /tmp/cinc-auditor.rpm && \
     rpm2cpio /tmp/cinc-auditor.rpm | cpio -idmv && \
     rm -rf /tmp/cinc-auditor.rpm

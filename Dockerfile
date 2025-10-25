@@ -25,10 +25,11 @@ RUN mkdir -p /share
 RUN apt-get update && \
     apt-get install -y wget rpm2cpio cpio && \
     case "$TARGETARCH" in \
-        amd64)  ARCH=x86_64 ;; \
-        arm64)  ARCH=aarch64 ;; \
+        amd64) arch=x86_64 ;; \
+        arm64) arch=aarch64 ;; \
+        *) echo "Unsupported TARGETARCH: $TARGETARCH" >&2; exit 1 ;; \
     esac && \
-    wget "http://ftp-osl.osuosl.org/pub/cinc/files/${CHANNEL}/cinc-auditor/${VERSION}/el/8/cinc-auditor-${VERSION}-1.el8.${ARCH}.rpm" -O /tmp/cinc-auditor.rpm && \
+    wget "http://ftp-osl.osuosl.org/pub/cinc/files/${CHANNEL}/cinc-auditor/${VERSION}/el/8/cinc-auditor-${VERSION}-1.el8.${arch}.rpm" -O /tmp/cinc-auditor.rpm && \
     rpm2cpio /tmp/cinc-auditor.rpm | cpio -idmv && \
     rm -rf /tmp/cinc-auditor.rpm
 

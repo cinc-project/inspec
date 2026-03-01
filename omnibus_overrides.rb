@@ -4,6 +4,7 @@
 train_stable = /^train \((.*)\)/.match(`gem list ^train$ --remote`)[1]
 override "train", version: "v#{train_stable}"
 override "ruby", version: "3.1.6"
+override "libffi", version: "3.4.7"
 
 override :openssl, version: "3.0.9"
 

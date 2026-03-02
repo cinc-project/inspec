@@ -65,4 +65,5 @@ build do
   end
 
   copy "#{project_dir}/cinc-auditor/cinc-auditor-wrapper", "#{install_dir}/bin/"
+  link "#{install_dir}/bin/cinc-wrapper", "#{install_dir}/bin/inspec"
 end

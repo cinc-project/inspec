@@ -65,5 +65,15 @@ build do
   end
 
   copy "#{project_dir}/cinc-auditor/cinc-auditor-wrapper", "#{install_dir}/bin/"
-  link "#{install_dir}/bin/cinc-wrapper", "#{install_dir}/bin/inspec"
+
+  if windows?
+    # On Windows, create a standalone inspec.bat that delegates to cinc-auditor.
+    # Cannot copy cinc-auditor.bat here because appbundler creates it as a
+    # deferred build step that runs after all other queued steps.
+    block "Create inspec.bat wrapper" do
+      File.write("#{install_dir}/bin/inspec.bat", "@ECHO OFF\r\n\"%~dp0cinc-auditor.bat\" %*\r\n")
+    end
+  else
+    link "#{install_dir}/bin/cinc-auditor-wrapper", "#{install_dir}/bin/inspec"
+  end
 end

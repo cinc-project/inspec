@@ -50,25 +50,29 @@ module Inspec::DSL
       # if a gem matches, try to load the resource from the gem
       gem_name = Inspec::Deprecation::Deprecator.new.match_gem_for_fallback_resource_name(id.to_s)
       if gem_name
-        # Install if needed
-        cfg = Inspec::Config.cached
-        unless cfg.final_options[:auto_install_gems]
-          Inspec.deprecate(:core_resource_moved_to_rp, "The resource pack gem '#{gem_name}' is required for resource '#{id}' support (consider --auto-install-gems).")
+        # Prefer a resource-pack gem that is already available to the current
+        # Ruby (via Bundler, the omnibus embedded gem dir, system gems, etc.)
+        # over reinstalling into ~/.inspec/gems. Packagers can preinstall the
+        # gem alongside InSpec and have the fallback succeed without touching
+        # the user's plugin path or requiring network access.
+        gem_path =
+          begin
+            spec = Gem::Specification.find_by_name(gem_name)
+            spec.activate unless spec.activated?
+            spec.full_gem_path
+          rescue Gem::MissingSpecError
+            cfg = Inspec::Config.cached
+            unless cfg.final_options[:auto_install_gems]
+              Inspec.deprecate(:core_resource_moved_to_rp, "The resource pack gem '#{gem_name}' is required for resource '#{id}' support (consider --auto-install-gems).")
+            end
 
-        end
+            Inspec::Plugin::V2::Installer.instance.ensure_installed gem_name
+            loader = Inspec::Plugin::V2::Loader.new
+            loader.activate_managed_gems_for_plugin(gem_name)
+            loader.find_gem_directory(gem_name)
+          end
 
-        Inspec::Plugin::V2::Installer.instance.ensure_installed gem_name
-
-        # Load the gem, add  gemspecs to the path, load any deps, load resource libraries into registry
-        # This is plugin API orthodoxy but is impossible to program
-        # Inspec::Plugin::V2::Registry.instance.find_activator(gem_name).activate
-        loader = Inspec::Plugin::V2::Loader.new
-
-        # 1. Activate gem and deps.
-        loader.activate_managed_gems_for_plugin(gem_name)
-
-        # 2. Load all libraries from the gem path
-        gem_path = loader.find_gem_directory(gem_name)
+        # Load all resource libraries from the gem path
         resources_path = File.join(gem_path, "lib", gem_name, "resources", "*.rb")
         legacy_library_path = File.join(gem_path, "libraries", "*.rb")
         Dir.glob([resources_path, legacy_library_path]).each do |resource_lib|

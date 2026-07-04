@@ -43,6 +43,12 @@ build do
   bundle "config set --local without test kitchen", env: env
   bundle "install", env: env
 
+  # Ruby 3.1's default openssl gem (3.0.1) can't toggle FIPS on OpenSSL 3.x
+  # providers and raises "does not support FIPS mode"; 3.2.0+ can. Install a
+  # newer one so it shadows the default gem for `ruby -ropenssl`.
+  # double quotes: cmd.exe doesn't strip single quotes, breaking the requirement
+  gem %{install openssl --version ">= 3.2.0" --no-document}, env: env if fips_mode?
+
   ruby "post-bundle-install.rb", env: env
 
   gem "build inspec-core.gemspec", env: env

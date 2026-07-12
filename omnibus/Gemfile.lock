@@ -19,7 +19,7 @@ GEM
       rexml (~> 3.4)
       ruby-progressbar (~> 1.7)
       thor (>= 0.18, < 2.0)
-    omnibus-software (26.5.12)
+    omnibus-software (26.7.18)
       ffi (>= 1.17.0)
       omnibus (>= 9.0.0)
 

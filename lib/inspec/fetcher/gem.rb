@@ -38,7 +38,7 @@ module Inspec::Fetcher
                       plugin_installer.plugin_installed?(@gem_name)
                     end
 
-      unless have_plugin
+      unless have_plugin || system_gem_spec
         # Install
         # TODO - error handling?
         Inspec::Log.debug("GemFetcher - install request for #{@gem_name}")
@@ -57,6 +57,7 @@ module Inspec::Fetcher
       if path
         loader = Inspec::Plugin::V2::Loader.new
         gem_dir_path = loader.find_gem_directory(@gem_name, @version)
+        gem_dir_path ||= system_gem_spec&.full_gem_path
         if gem_dir_path
           # Cache the gem file
           FileUtils.mkdir_p(path)
@@ -110,8 +111,30 @@ module Inspec::Fetcher
 
     private
 
+    # A gem already available to the current Ruby (via Bundler, the omnibus
+    # embedded gem dir, system gems, etc.). Preferring it over a plugin
+    # install lets packagers ship resource-pack gems alongside InSpec, so
+    # profile gem dependencies resolve without touching the user's plugin
+    # dir or requiring network access. An explicit :path target is a
+    # development-mode override and always wins, so skip the lookup then.
+    def system_gem_spec
+      return nil if @gem_path
+
+      @system_gem_spec ||= begin
+        if @version
+          ::Gem::Specification.find_by_name(@gem_name, @version)
+        else
+          ::Gem::Specification.find_by_name(@gem_name)
+        end
+      rescue ::Gem::MissingSpecError
+        nil
+      end
+    end
+
     def gem_version
-      @version || Inspec::Plugin::V2::Loader.find_gemspec_of(@gem_name)&.version&.to_s
+      @version ||
+        Inspec::Plugin::V2::Loader.find_gemspec_of(@gem_name)&.version&.to_s ||
+        system_gem_spec&.version&.to_s
     end
   end
 end

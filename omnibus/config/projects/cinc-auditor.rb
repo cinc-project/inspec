@@ -70,7 +70,7 @@ compress :dmg
 
 package :msi do
   fast_msi true
-  upgrade_code "DFCD452F-31E5-4236-ACD1-253F4720250B"
+  upgrade_code "915D916D-2972-41E3-BE23-59BCB9AB452D"
   wix_light_extension "WixUtilExtension"
   # signing_identity "33A82DC08CA7C6B370FFD0C958D9EE30187DE9E4", machine_store: false, keypair_alias: "key_1340572417"
   wix_light_delay_validation true

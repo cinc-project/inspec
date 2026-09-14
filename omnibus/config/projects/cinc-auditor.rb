@@ -76,5 +76,11 @@ package :msi do
   wix_light_delay_validation true
 end
 
+# No APPX: makeappx.exe comes with the Windows SDK, which the omnibus-windows
+# builder image does not carry, and nothing installs the .appx.
+package :appx do
+  skip_packager true
+end
+
 exclude "**/.git"
 exclude "**/bundler/git"

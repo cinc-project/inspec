@@ -4,6 +4,7 @@ require "pathname" unless defined?(Pathname)
 require "zlib" unless defined?(Zlib)
 require "zip" unless defined?(Zip)
 require "inspec/iaf_file"
+require "inspec/log"
 
 module Inspec
   class FileProvider
@@ -117,16 +118,27 @@ module Inspec
 
     def extract(destination_path = ".")
       FileUtils.mkdir_p(destination_path)
+      destination = File.expand_path(destination_path)
 
       Zip::File.open(@path) do |archive|
         archive.each do |file|
-          final_path = File.join(destination_path, file.name)
+          final_path = File.expand_path(file.name, destination)
+          next if final_path == destination
+
+          unless final_path.start_with?(destination + File::SEPARATOR)
+            Inspec::Log.warn("Skipping #{file.name.inspect} in #{@path}: it would extract outside #{destination}")
+            next
+          end
 
           # This removes the top level directory (and any other files) to ensure
           # extracted files do not conflict.
           FileUtils.remove_entry(final_path) if File.exist?(final_path)
+          FileUtils.mkdir_p(File.dirname(final_path))
 
-          archive.extract(file, final_path)
+          # rubyzip 2.4 ships the 3.x extract signature as extract_v3.
+          relative_path = final_path.delete_prefix(destination + File::SEPARATOR)
+          extract_method = archive.respond_to?(:extract_v3) ? :extract_v3 : :extract
+          archive.public_send(extract_method, file, relative_path, destination_directory: destination)
         end
       end
     end

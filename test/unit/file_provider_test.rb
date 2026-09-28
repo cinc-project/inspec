@@ -163,6 +163,37 @@ describe Inspec::ZipProvider do
     it "must read the contents of the file" do
       _(subject.read("inspec.yml")).must_match(/^name: complete$/)
     end
+
+    it "must extract every file under the destination" do
+      Dir.mktmpdir do |dir|
+        dest = File.join(dir, "out")
+        subject.extract(dest)
+        _(File.read(File.join(dest, "inspec.yml"))).must_match(/^name: complete$/)
+        _(File.file?(File.join(dest, "files/a_sub_dir/sub_items.conf"))).must_equal true
+      end
+    end
+  end
+
+  describe "extracting a zip with an entry outside the destination" do
+    it "must neither write nor remove anything outside it" do
+      Dir.mktmpdir do |dir|
+        zip = File.join(dir, "zipslip.zip")
+        Zip::OutputStream.open(zip) do |zos|
+          zos.put_next_entry("inspec.yml")
+          zos.write("name: zipslip\n")
+          zos.put_next_entry("../canary")
+          zos.write("overwritten")
+        end
+        canary = File.join(dir, "canary")
+        File.write(canary, "original")
+        dest = File.join(dir, "out")
+
+        Inspec::ZipProvider.new(zip).extract(dest)
+
+        _(File.read(canary)).must_equal "original"
+        _(File.read(File.join(dest, "inspec.yml"))).must_equal "name: zipslip\n"
+      end
+    end
   end
 end
 

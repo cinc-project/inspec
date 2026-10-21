@@ -42,6 +42,8 @@ dependency "cinc-auditor"
 
 # Remove all .dll.a and .a files needed for static linkage.
 dependency "ruby-cleanup"
+# Remove vendored Gemfile.lock fixtures; replace the older default json.
+dependency "more-ruby-cleanup"
 # Mark all directories world readable.
 dependency "gem-permissions"
 # Redirect all gem bat files and rb files to point to embedded ruby.

@@ -35,7 +35,8 @@ else
 end
 
 build_version Inspec::VERSION
-build_iteration 1
+# A respin sets BUILD_ITERATION; unset or empty builds iteration 1.
+build_iteration(ENV["BUILD_ITERATION"].to_s.empty? ? 1 : ENV["BUILD_ITERATION"].to_i)
 
 # Load dynamically updated overrides
 overrides_path = File.expand_path("../../../omnibus_overrides.rb", __dir__)

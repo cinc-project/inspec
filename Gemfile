@@ -22,6 +22,11 @@ gem "unf_ext", "= 0.0.8.2"
 # but our runtime dep is still 3.9+
 gem "rspec", ">= 3.10"
 
+# net-ssh 7.3.10 fixes the remaining SSH client advisories and faraday 1.10.6 fixes
+# the redirect advisories.
+gem "net-ssh", ">= 7.3.10"
+gem "faraday", ">= 1.10.6"
+
 group :omnibus do
   gem "rb-readline"
   gem "appbundler"

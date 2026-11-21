@@ -38,7 +38,9 @@ gem "rubyntlm", ">= 0.6.8"
 # net-ssh 7.3.5 fixes seven advisories: host certificates (GHSA-vxj5-fg65-x765,
 # already in 7.3.4), ProxyCommand, agent forwarding, and DoS by servers or keys;
 # 7.3.8 completes 7.3.5's ProxyJump fix (GHSA-g2r2-x3p2-5677).
-gem "net-ssh", ">= 7.3.8"
+gem "net-ssh", ">= 7.3.10"
+# chef-licensing pulls faraday-http-cache; 2.8.0 fixes its cache advisories.
+gem "faraday-http-cache", ">= 2.8.0"
 
 group :omnibus do
   gem "rb-readline"

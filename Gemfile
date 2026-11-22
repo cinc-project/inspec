@@ -26,6 +26,17 @@ gem "rspec", ">= 3.10"
 # the redirect advisories.
 gem "net-ssh", ">= 7.3.10"
 gem "faraday", ">= 1.10.6"
+# addressable 2.9.1 fixes seven URI and template advisories (GHSA-qq38-m9mg-xjj5
+# and others); 2.9.2 also fixes 2.9.1's IDNA slowdown.
+gem "addressable", ">= 2.9.2"
+# rubyntlm 0.6.6 fixes the NTLMv2 verification bypass (GHSA-cx24-f932-rr55);
+# 0.6.6 and 0.6.7 shipped broken, so 0.6.8 is the floor.
+gem "rubyntlm", ">= 0.6.8"
+# json 2.19.9 fixes GHSA-x2f5-4prf-w687.
+gem "json", ">= 2.19.9"
+# rubyzip 3.4 fixes the path traversal in CVE-2026-85396 (GHSA-47m2-wp7j-p9vc).
+# Without this floor chef-winrm-fs 1.4.2 keeps rubyzip on 2.x.
+gem "rubyzip", ">= 3.4"
 
 group :omnibus do
   gem "rb-readline"

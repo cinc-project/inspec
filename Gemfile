@@ -49,7 +49,8 @@ end
 
 group :test do
   gem "chefstyle"
-  gem "concurrent-ruby"
+  # concurrent-ruby 1.3.7 fixes GHSA-h8w8-99g7-qmvj and two Low advisories.
+  gem "concurrent-ruby", ">= 1.3.7"
   gem "json_schemer"
   gem "m"
   # 1.4.0+ requires min ruby 3.2, InSpec5 does not support Ruby 3.2

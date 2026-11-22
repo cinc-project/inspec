@@ -3,6 +3,7 @@ LABEL maintainer="Cinc Project <docker@cinc.sh>"
 
 ARG VERSION=5.24.24
 ARG CHANNEL=stable
+ARG BUILD_ITERATION=1
 ARG TARGETARCH
 ARG ARCH=x86_64
 
@@ -29,7 +30,7 @@ RUN apt-get update && \
         arm64) arch=aarch64 ;; \
         *) echo "Unsupported TARGETARCH: $TARGETARCH" >&2; exit 1 ;; \
     esac && \
-    wget "http://ftp-osl.osuosl.org/pub/cinc/files/${CHANNEL}/cinc-auditor/${VERSION}/el/8/cinc-auditor-${VERSION}-1.el8.${arch}.rpm" -O /tmp/cinc-auditor.rpm && \
+    wget "http://ftp-osl.osuosl.org/pub/cinc/files/${CHANNEL}/cinc-auditor/${VERSION}/el/8/cinc-auditor-${VERSION}-${BUILD_ITERATION}.el8.${arch}.rpm" -O /tmp/cinc-auditor.rpm && \
     rpm2cpio /tmp/cinc-auditor.rpm | cpio -idmv && \
     rm -rf /tmp/cinc-auditor.rpm
 

@@ -39,6 +39,10 @@ gem "rubyntlm", ">= 0.6.8"
 # already in 7.3.4), ProxyCommand, agent forwarding, and DoS by servers or keys;
 # 7.3.8 completes 7.3.5's ProxyJump fix (GHSA-g2r2-x3p2-5677).
 gem "net-ssh", ">= 7.3.8"
+# Upstream train 3.16.5 caps activesupport at 7.x, which has no release fixing
+# GHSA-8474-xrp6-wh69. The Cinc fork lifts the cap (3.16.5.1, activesupport 8.0.5.2),
+# so each upstream train release needs a fork rebase and a new X.Y.Z.1 first.
+gem "train", ">= 3.16.5.1", source: "https://rubygems.cinc.sh"
 
 group :omnibus do
   gem "rb-readline"
